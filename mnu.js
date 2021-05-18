@@ -76,6 +76,7 @@ const buildFoodMenu = () => {
         
         const sectionHeading = document.createElement('h2');
         sectionHeading.innerText = category.name;
+        sectionHeading.classList.add('category-name');
 
         section.appendChild(sectionHeading);
 
@@ -85,35 +86,41 @@ const buildFoodMenu = () => {
         //loop through items in category
         category.items.forEach((item) => {
             const listItem = document.createElement('li');
+            listItem.classList.add('food-item');
 
-            const heading = document.createElement('h3');
-            heading.innerText = item.name;
+            const h3ItemName = document.createElement('h3');
+            h3ItemName.innerText = item.name;
+            h3ItemName.classList.add('item-name');
+            listItem.appendChild(h3ItemName);
 
-            const ingredients = document.createElement('p');
-            ingredients.innerText = compileIngredientsString(item.ingredients);
+            if (item.ingredients){
+                const pIngredients = document.createElement('p');
+                pIngredients.innerText = compileIngredientsString(item.ingredients);
+                pIngredients.classList.add('item-info');
+                listItem.appendChild(pIngredients);
+            }
 
-            const price = document.createElement('p');
-            price.innerText = '$' + item.price;
+            const pPrice = document.createElement('p');
+            pPrice.innerText = '$' + item.price;
+            pPrice.classList.add('item-price');
+            listItem.appendChild(pPrice);
 
             //loop through tags on item
-            let tagList = null;
+            let ulTags = null;
             if (item.tags){
-                tagList = document.createElement('ul');
+                ulTags = document.createElement('ul');
+                ulTags.classList.add('tag-list')
 
                 item.tags.forEach(tag => {
-                    const tagListItem = document.createElement('li');
-                    tagListItem.innerText = tag;
+                    const liTag = document.createElement('li');
+                    liTag.innerText = tag;
+                    liTag.classList.add('item-tag');
 
-                    tagList.appendChild(tagListItem);
+                    ulTags.appendChild(liTag);
                 })
             }
-            
-            //append info to menu item
-            listItem.appendChild(heading);
-            listItem.appendChild(ingredients);
-            listItem.appendChild(price);
-            if (tagList){
-                listItem.appendChild(tagList);
+            if (ulTags){
+                listItem.appendChild(ulTags);
             }
 
             //append menu item to list
@@ -133,6 +140,7 @@ const buildDrinkMenu = () => {
     
     const h2SectionHeading = document.createElement('h2');
     h2SectionHeading.innerText = 'Drinks';
+    h2SectionHeading.classList.add('category-name');
     sectionDrinks.appendChild(h2SectionHeading);
 
     //category list
@@ -140,10 +148,12 @@ const buildDrinkMenu = () => {
 
     drinks.forEach(category => {
         const liCategory = document.createElement('li');
+        liCategory.classList.add('drink-category');
 
         //category heading
         const h3CategoryHeading = document.createElement('h3');
         h3CategoryHeading.innerText = category.name;
+        h3CategoryHeading.classList.add('category-name');
         liCategory.appendChild(h3CategoryHeading);
 
         //drink list
@@ -183,16 +193,19 @@ const buildCategoryLinks = () => {
 //builds and returnsa list node
 const buildDrinkListItem = (item) => {
     const liDrink = document.createElement('li');
+    liDrink.classList.add('drink-item');
 
     //drink name
     const h4DrinkName = document.createElement('h4');
     h4DrinkName.innerText = item.name;
+    h4DrinkName.classList.add('item-name');
     liDrink.appendChild(h4DrinkName);
 
     //drink details
     if (item.abv || item.maker || item.location){
         const pItemDetails = document.createElement('p');
         pItemDetails.innerText = compileDrinkDetailString(item);
+        pItemDetails.classList.add('item-info');
         liDrink.appendChild(pItemDetails);
     }
 
@@ -200,7 +213,22 @@ const buildDrinkListItem = (item) => {
     if (item.description){
         const pItemDescription = document.createElement('p');
         pItemDescription.innerText = item.description;
+        pItemDescription.classList.add('item-info')
         liDrink.appendChild(pItemDescription);
+    }
+
+    //price
+    const pPrice = document.createElement('p');
+    pPrice.innerText = '$' + item.price;
+    pPrice.classList.add('item-price');
+    liDrink.appendChild(pPrice);
+
+    //drink oz
+    if (item.ounces){
+        const pOz = document.createElement('p');
+        pOz.innerText = item.ounces + 'oz';
+        pOz.classList.add('drink-oz')
+        liDrink.appendChild(pOz);
     }
 
     return liDrink;

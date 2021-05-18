@@ -1,6 +1,108 @@
+:root{
+    --bg-color: #F7F7F7;
+    --border-color: #D1D1D1;
+
+    --primary: #184D47;
+    --primary-50: rgba(24, 77, 71, 0.5);
+    --primary-30: rgba(24, 77, 71, 0.3);
+
+    --secondary: #95BB7B;
+
+    --tertiary: #FBD586;
+    --tertiary-50: rgba(251, 214, 134, 0.5);
+
+    --alert: #C54756;
+}
+
 html, body{
     height: 100%;
     font-family: 'Raleway', sans-serif;
     scroll-behavior: smooth;
+    background-color: var(--bg-color);
 }
 
+header{
+    display: flex;
+    flex-direction: column-reverse;
+    background-color: white;
+}
+
+#logo{
+    width: 50%;
+    max-width: 250px;
+    margin: 0 auto;
+}
+
+#category-list-container{
+    background-color: white;
+}
+
+#category-list{
+    
+}
+
+#menu > section{
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    background-color: white;
+    margin: 8px 0;
+    padding: 24px 16px;
+    padding-bottom: 8px;
+}
+
+.category-name{
+    margin: 0;
+    margin-bottom: 24px;
+}
+
+.food-item, .drink-item{
+    position: relative;
+    padding: 16px 0;
+    border-top: 1px solid var(--border-color);
+}
+
+.item-name{
+    margin: 0;
+    margin-bottom: 12px;
+}
+
+.item-info{
+    margin: 0;
+    margin-top: 12px;
+    width: 85%;
+    line-height: 1.3;
+}
+
+.item-price{
+    margin: 0;
+    position: absolute;
+    top: 16px;
+    right: 0;
+    font-weight: bold;
+}
+
+.tag-list{
+    margin-top: 12px;
+    display: flex;
+}
+
+.item-tag{
+    margin-right: 4px;
+    background-color: var(--tertiary-50);
+    border: 1px solid var(--tertiary);
+    border-radius: 8px;
+    font-size: .75rem;
+    font-weight: bold;
+    padding: 4px 8px;
+}
+
+.drink-category{
+    margin-top: 24px;
+}
+
+.drink-oz{
+    margin: 0;
+    position: absolute;
+    top: 36px;
+    right: 0;
+}
