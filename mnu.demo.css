@@ -10,16 +10,29 @@
 
     --tertiary: #FBD586;
     --tertiary-50: rgba(251, 214, 134, 0.5);
+    --tertiary-30: rgba(251, 214, 134, 0.3);
 
     --alert: #C54756;
+
+    --category-list-height: 100px;
 }
 
 html, body{
-    height: 100%;
+    min-height: 100%;
     font-family: 'Raleway', sans-serif;
     scroll-behavior: smooth;
     background-color: var(--bg-color);
+    box-sizing: border-box;
 }
+
+body{
+    position: relative;
+}
+
+
+/* =================================================================== */
+/* HEADER */
+/* =================================================================== */
 
 header{
     display: flex;
@@ -28,26 +41,137 @@ header{
 }
 
 #logo{
-    width: 50%;
+    width: 60%;
     max-width: 250px;
     margin: 0 auto;
+    margin-top: 16px;
 }
 
-#category-list-container{
+#top-bar{
+    background-color: var(--primary);
+}
+
+#top-bar ul{
+    padding: 16px 16px;
+    display: flex;
+    justify-content: space-between;
+}
+
+#top-bar a{
+    color: white;
+    text-decoration: none;
+}
+
+
+
+/* =================================================================== */
+/* CATEGORY LIST */
+/* =================================================================== */
+
+#category-list-section{
     background-color: white;
+    border-bottom: 1px solid var(--border-color);
+
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    height: var(--category-list-height);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-#category-list{
+#category-list-rail{
+    padding: 0 12px;
+    overflow-x: auto;
+    text-align: center;
+}
+
+#category-list-train{
+    display: inline-flex;
+    flex-wrap: nowrap;
+}
+
+/* https://chenhuijing.com/blog/flexbox-and-padding/ */
+#category-list-train:after{
+    content: '';
+    padding: 4px;
+}
+
+#category-list-train li{
+    display: block;
+    margin: 0 4px;
+}
     
+.category-button{
+    display: block;
+    position: relative;
+    text-align: center;
+    padding: 8px;
+    
+    width: 120px;
+
+    background-color: transparent;
+    color: black;
+    font-size: 1rem;
+    text-decoration: none;
+
+    border: none;
+}
+
+.category-button.active-category:after{
+    content: '';
+    width: 50px;
+    height: 3px;
+    background-color: var(--secondary);
+    position: absolute;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.category-link-icon{
+    width: 44px;
+}
+
+.category-link-name{
+    display: block;
+    margin: 0;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+
+
+/* =================================================================== */
+/* MENU ITEMS */
+/* =================================================================== */
+
+#menu{
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 #menu > section{
     border-top: 1px solid var(--border-color);
     border-bottom: 1px solid var(--border-color);
     background-color: white;
-    margin: 8px 0;
     padding: 24px 16px;
     padding-bottom: 8px;
+    margin: 8px 0;
+}
+
+@media screen and (min-width: 768px){
+    #menu > section{
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        padding: 48px 32px;
+        margin: 24px 0;
+    }
 }
 
 .category-name{

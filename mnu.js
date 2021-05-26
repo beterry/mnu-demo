@@ -1,5 +1,19 @@
 let food = [];
 let drinks = [];
+const iconIndex = {
+    Drinks: 'images/icons/Drinks.svg',
+    Apps: 'images/icons/Apps.svg',
+    Desserts: 'images/icons/Desserts.svg',
+    Entrees: 'images/icons/Entrees.svg',
+    Burgers: 'images/icons/Burgers.svg',
+    Sandwiches: 'images/icons/Sandwiches.svg',
+    Salads: 'images/icons/Salads.svg',
+    Flatbreads: 'images/icons/Flatbreads.svg',
+    Specials: 'images/icons/Specials.svg',
+}
+const categoryOrder = ['Drinks', 'Specials', 'Apps', 'Salads', 'Flatbreads', 'Sandwiches', 'Burgers', 'Entrees', 'Desserts'];
+//this needs to match variable in the CSS
+const categoryNavHeight = 100;
 
 const client = contentful.createClient({
     space: '3t2epby3nzvk',
@@ -43,6 +57,8 @@ const organizeFood = (data) => {
             });
         }
     })
+
+    foodSorted.sort((a, b) => categoryOrder.indexOf(a.name) - categoryOrder.indexOf(b.name));
 
     return foodSorted;
 }
@@ -176,21 +192,43 @@ const buildDrinkMenu = () => {
 }
 
 const buildCategoryLinks = () => {
-    const ulMenuCategories = document.getElementById("category-list");
+    const ulMenuCategories = document.getElementById("category-list-train");
 
-    food.forEach(category => {
+    //isolate the category names
+    let categoryList = food.map(cat => cat.name);
+    //add Drinks to the category list
+    categoryList.push('Drinks');
+    categoryList.sort((a, b) => categoryOrder.indexOf(a) - categoryOrder.indexOf(b));
+
+    categoryList.forEach(category => {
         const li = document.createElement('li');
 
-        const link = document.createElement('a');
-        link.innerText = category.name;
-        link.href = '#' + category.name;
+        const button = document.createElement('button');
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleCategoryTapped(category)
+        });
+        button.id = `${category}-button`
+        button.classList.add('category-button');
 
-        li.appendChild(link);
+        const spanCategoryName = document.createElement('span');
+        spanCategoryName.innerText = category;
+        spanCategoryName.classList.add('category-link-name');
+
+        const imgIcon = document.createElement('img');
+        imgIcon.src = iconIndex[category];
+        imgIcon.alt = category;
+        imgIcon.classList.add('category-link-icon');
+
+        button.appendChild(imgIcon);
+        button.appendChild(spanCategoryName);
+
+        li.appendChild(button);
         ulMenuCategories.appendChild(li);
     })
 }
 
-//builds and returnsa list node
+//builds and returns a list node
 const buildDrinkListItem = (item) => {
     const liDrink = document.createElement('li');
     liDrink.classList.add('drink-item');
@@ -271,4 +309,31 @@ const compileDrinkDetailString = (item) => {
     }else{
         return '';
     }
+}
+
+const handleCategoryTapped = (category) => {
+    setActiveCategory(category);
+    scrollToCategory(category);
+}
+
+const setActiveCategory = (category) => {
+    const newButton = document.getElementById(`${category}-button`);
+    const oldButton = document.getElementsByClassName('active-category');
+
+    if (oldButton.length){
+        oldButton[0].classList.remove('active-category');
+    }
+
+    newButton.classList.add('active-category');
+}
+
+const scrollToCategory = (category) => {
+    const distanceFromTop = document.getElementById(category).offsetTop;
+    //these values should match the dimensions set in CSS
+    const sectionGap = window.innerWidth > 768 ? 24 : 8;
+
+    window.scrollTo({
+        top: distanceFromTop - categoryNavHeight - sectionGap,
+        behavior: 'smooth',
+    })
 }
