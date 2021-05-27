@@ -83,6 +83,7 @@ header{
 }
 
 #category-list-rail{
+    position: relative;
     padding: 0 12px;
     overflow-x: auto;
     text-align: center;
@@ -110,11 +111,11 @@ header{
     text-align: center;
     padding: 8px;
     
-    width: 120px;
+    width: 100px;
 
     background-color: transparent;
     color: black;
-    font-size: 1rem;
+    font-size: .875rem;
     text-decoration: none;
 
     border: none;

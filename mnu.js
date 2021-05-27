@@ -1,5 +1,9 @@
 let food = [];
 let drinks = [];
+
+let lastKnownScrollPosition = 0;
+let scrollEventTicking = false;
+
 const iconIndex = {
     Drinks: 'images/icons/Drinks.svg',
     Apps: 'images/icons/Apps.svg',
@@ -11,7 +15,10 @@ const iconIndex = {
     Flatbreads: 'images/icons/Flatbreads.svg',
     Specials: 'images/icons/Specials.svg',
 }
+
+//TODO: make this an editable value in Contentful
 const categoryOrder = ['Drinks', 'Specials', 'Apps', 'Salads', 'Flatbreads', 'Sandwiches', 'Burgers', 'Entrees', 'Desserts'];
+
 //this needs to match variable in the CSS
 const categoryNavHeight = 100;
 
@@ -317,23 +324,87 @@ const handleCategoryTapped = (category) => {
 }
 
 const setActiveCategory = (category) => {
+    clearActiveCategory();
+
+    //add active class to new category
     const newButton = document.getElementById(`${category}-button`);
+    newButton.classList.add('active-category');
+
+    //scroll the category rail to correct location
+    const rail = document.getElementById('category-list-rail');
+    rail.scrollTo({
+        left: newButton.offsetLeft,
+        behavior: 'smooth',
+    }) 
+}
+
+const clearActiveCategory = () => {
     const oldButton = document.getElementsByClassName('active-category');
 
     if (oldButton.length){
         oldButton[0].classList.remove('active-category');
     }
-
-    newButton.classList.add('active-category');
 }
 
 const scrollToCategory = (category) => {
     const distanceFromTop = document.getElementById(category).offsetTop;
     //these values should match the dimensions set in CSS
     const sectionGap = window.innerWidth > 768 ? 24 : 8;
+    const scrollToPosition = distanceFromTop - categoryNavHeight - sectionGap;
+
+    //no event listeners while scrolling
+    scrollEventTicking = true;
 
     window.scrollTo({
-        top: distanceFromTop - categoryNavHeight - sectionGap,
+        top: scrollToPosition,
         behavior: 'smooth',
     })
+
+    //TODO: this is kinda hacky
+    //after scrolling, allow scrolling event listeners again
+    setTimeout(() => {
+        scrollEventTicking = false;
+    }, 1000);
+
+    console.log('Scrolling to: ' + scrollToPosition);
 }
+
+const checkForScrollOverCategory = (scrollPos) => {
+    const sectionGap = window.innerWidth > 768 ? 24 : 8;
+
+    const categoryIndex = food.map(category => category.name).sort((a,b) => {
+        return document.getElementById(a).offsetTop - document.getElementById(b).offsetTop
+    })
+
+    const i = categoryIndex.findIndex(category => {
+        const viewStart = Math.round(scrollPos + sectionGap + categoryNavHeight);
+        const sectionTop = Math.round(document.getElementById(category).offsetTop);
+
+        console.log("Viewport is at: " + viewStart);
+
+        return sectionTop > viewStart
+    });
+
+    console.log('Setting category: ' + i)
+
+    if (scrollPos === 0){
+        clearActiveCategory();
+    }else if (i > 0){
+        setActiveCategory(categoryIndex[i - 1]);
+    }else{
+        setActiveCategory("Drinks");
+    }
+}
+
+document.addEventListener('scroll', () => {
+    lastKnownScrollPosition = window.scrollY;
+
+    if (!scrollEventTicking) {
+        setTimeout(() => {
+            checkForScrollOverCategory(lastKnownScrollPosition);
+            scrollEventTicking = false;
+        }, 500)
+    }
+
+    scrollEventTicking = true;
+})
