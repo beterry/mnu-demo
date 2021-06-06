@@ -124,7 +124,7 @@ const buildFoodMenu = () => {
             }
 
             const pPrice = document.createElement('p');
-            pPrice.innerText = '$' + item.price;
+            pPrice.innerText = '$' + item.price.toFixed(2);
             pPrice.classList.add('item-price');
             listItem.appendChild(pPrice);
 
@@ -264,7 +264,7 @@ const buildDrinkListItem = (item) => {
 
     //price
     const pPrice = document.createElement('p');
-    pPrice.innerText = '$' + item.price;
+    pPrice.innerText = '$' + item.price.toFixed(2);
     pPrice.classList.add('item-price');
     liDrink.appendChild(pPrice);
 

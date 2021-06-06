@@ -8,6 +8,7 @@
     
     <link rel="stylesheet" href="normalize.css">
     <link rel="stylesheet" href="mnu.demo.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -17,8 +18,18 @@
         <img id="logo" src="images/station-grill-logo.png" alt="Station Grill logo" />
         <nav id="top-bar">
             <ul>
-                <li><a href="#">Station Grill Website</a></li>
-                <li><a href="tel:7174190478">717-419-0478</a></li>
+                <li>
+                    <a href="https://mnumenu.com">
+                        <span class="material-icons">home</span>
+                        <span class="link-expanded">Station Grill Website</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="tel:7174190478">
+                        <span class="material-icons">call</span>
+                        <span class="link-expanded" >717-419-0478</span>
+                    </a>
+                </li>
             </ul>
         </nav>
     </header>
@@ -28,6 +39,10 @@
         </div>
     </nav>
     <main id="menu"></main>
+    <footer class="mnu-footer">
+        <p>Powered by</p>
+        <a href="https://mnumenu.com"><img src="images//mnu-logo.svg" alt="mnu" /></a>
+    </footer>
     <script src="https://cdn.jsdelivr.net/npm/contentful@latest/dist/contentful.browser.min.js"></script>
     <script src="mnu.js"></script>
 </body>
