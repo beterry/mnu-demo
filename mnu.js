@@ -4,20 +4,39 @@ let drinks = [];
 let lastKnownScrollPosition = 0;
 let scrollEventTicking = false;
 
+//this is the default shown
+let activeMenu = 'food';
+
 const iconIndex = {
-    Drinks: 'images/icons/Drinks.svg',
-    Apps: 'images/icons/Apps.svg',
-    Desserts: 'images/icons/Desserts.svg',
-    Entrees: 'images/icons/Entrees.svg',
-    Burgers: 'images/icons/Burgers.svg',
-    Sandwiches: 'images/icons/Sandwiches.svg',
-    Salads: 'images/icons/Salads.svg',
-    Flatbreads: 'images/icons/Flatbreads.svg',
-    Specials: 'images/icons/Specials.svg',
+    Starters: 'images/icons/icons_starters.svg',
+    Desserts: 'images/icons/icons_dessert.svg',
+    Entrees: 'images/icons/icons_entrees.svg',
+    Burgers: 'images/icons/icons_burgers.svg',
+    Sandwiches: 'images/icons/icons_sandwiches.svg',
+    Salads: 'images/icons/icons_salads.svg',
+    Flatbreads: 'images/icons/icons_flatbread.svg',
+    Specials: 'images/icons/icons_specials.svg',
+    Drafts: 'images/icons/icons_draft.svg',
+    Bottles: 'images/icons/icons_bottles.svg',
+    "Red Wine": 'images/icons/icons_red-wine.svg',
+    "White Wine": 'images/icons/icons_white-wine.svg',
 }
 
 //TODO: make this an editable value in Contentful
-const categoryOrder = ['Drinks', 'Specials', 'Apps', 'Salads', 'Flatbreads', 'Sandwiches', 'Burgers', 'Entrees', 'Desserts'];
+const categoryOrder = [
+    'Specials',
+    'Starters',
+    'Salads',
+    'Flatbreads',
+    'Sandwiches',
+    'Burgers',
+    'Entrees',
+    'Desserts',
+    'Drafts',
+    'Bottles',
+    'Red Wine',
+    'White Wine',
+];
 
 //this needs to match variable in the CSS
 const categoryNavHeight = 100;
@@ -36,66 +55,47 @@ const drinkCall = client.getEntries({'content_type': 'drinkItem'});
 Promise.all([foodCall, drinkCall])
 .then((res) => {
     //food
-    food = organizeFood(res[0]);
+    food = organizeItems(res[0]);
     console.log(food);
-    buildFoodMenu();
+    buildMenu(food, 'food-menu');
 
     //drinks
-    drinks = organizeDrinks(res[1]);
+    drinks = organizeItems(res[1]);
     console.log(drinks);
-    buildDrinkMenu();
+    buildMenu(drinks, 'drink-menu');
 
-    buildCategoryLinks();
+    buildCategoryLinks(food);
 })
 
 //seperates food items from Contentful into categories
-const organizeFood = (data) => {
-    const foodUnsorted = data.items.map((item) => item.fields);
-    let foodSorted = [];
+const organizeItems = (data) => {
+    const itemsUnsorted = data.items.map((item) => item.fields);
+    let itemsSorted = [];
 
-    foodUnsorted.forEach(item => {
-        const i = foodSorted.findIndex(category => category.name === item.category);
+    itemsUnsorted.forEach(item => {
+        const i = itemsSorted.findIndex(category => category.name === item.category);
         if (i >= 0){
-            foodSorted[i].items.push(item);
+            itemsSorted[i].items.push(item);
         }else{
-            foodSorted.push({
+            itemsSorted.push({
                 name: item.category,
                 items: [item],
             });
         }
     })
 
-    foodSorted.sort((a, b) => categoryOrder.indexOf(a.name) - categoryOrder.indexOf(b.name));
+    itemsSorted.sort((a, b) => categoryOrder.indexOf(a.name) - categoryOrder.indexOf(b.name));
 
-    return foodSorted;
+    return itemsSorted;
 }
 
-//seperates drink items from Contentful into categories
-const organizeDrinks = (data) => {
-    const drinksUnsorted = data.items.map((item) => item.fields);
-    let drinksSorted = [];
-
-    drinksUnsorted.forEach(item => {
-        const i = drinksSorted.findIndex(category => category.name === item.drinkCategory);
-        if (i >= 0){
-            drinksSorted[i].items.push(item);
-        }else{
-            drinksSorted.push({
-                name: item.drinkCategory,
-                items: [item],
-            });
-        }
-    })
-
-    return drinksSorted;
-}
-
-const buildFoodMenu = () => {
-    food.forEach(category => {
-        const container = document.getElementById('menu')
+const buildMenu = (items, htmlID) => {
+    items.forEach(category => {
+        const container = document.getElementById(htmlID);
 
         const section = document.createElement('section');
         section.id = category.name;
+        section.classList.add('menu-section');
         
         const sectionHeading = document.createElement('h2');
         sectionHeading.innerText = category.name;
@@ -108,43 +108,7 @@ const buildFoodMenu = () => {
 
         //loop through items in category
         category.items.forEach((item) => {
-            const listItem = document.createElement('li');
-            listItem.classList.add('food-item');
-
-            const h3ItemName = document.createElement('h3');
-            h3ItemName.innerText = item.name;
-            h3ItemName.classList.add('item-name');
-            listItem.appendChild(h3ItemName);
-
-            if (item.ingredients){
-                const pIngredients = document.createElement('p');
-                pIngredients.innerText = compileIngredientsString(item.ingredients);
-                pIngredients.classList.add('item-info');
-                listItem.appendChild(pIngredients);
-            }
-
-            const pPrice = document.createElement('p');
-            pPrice.innerText = '$' + item.price.toFixed(2);
-            pPrice.classList.add('item-price');
-            listItem.appendChild(pPrice);
-
-            //loop through tags on item
-            let ulTags = null;
-            if (item.tags){
-                ulTags = document.createElement('ul');
-                ulTags.classList.add('tag-list')
-
-                item.tags.forEach(tag => {
-                    const liTag = document.createElement('li');
-                    liTag.innerText = tag;
-                    liTag.classList.add('item-tag');
-
-                    ulTags.appendChild(liTag);
-                })
-            }
-            if (ulTags){
-                listItem.appendChild(ulTags);
-            }
+            const listItem = buildItem(item);
 
             //append menu item to list
             list.appendChild(listItem);
@@ -198,13 +162,14 @@ const buildDrinkMenu = () => {
     mainContainer.prepend(sectionDrinks);
 }
 
-const buildCategoryLinks = () => {
+const buildCategoryLinks = (categories) => {
+    //clear the train
     const ulMenuCategories = document.getElementById("category-list-train");
+    ulMenuCategories.innerHTML = "";
 
     //isolate the category names
-    let categoryList = food.map(cat => cat.name);
+    let categoryList = categories.map(cat => cat.name);
     //add Drinks to the category list
-    categoryList.push('Drinks');
     categoryList.sort((a, b) => categoryOrder.indexOf(a) - categoryOrder.indexOf(b));
 
     categoryList.forEach(category => {
@@ -236,22 +201,22 @@ const buildCategoryLinks = () => {
 }
 
 //builds and returns a list node
-const buildDrinkListItem = (item) => {
-    const liDrink = document.createElement('li');
-    liDrink.classList.add('drink-item');
+const buildItem = (item) => {
+    const liItem = document.createElement('li');
+    liItem.classList.add('item');
 
     //drink name
-    const h4DrinkName = document.createElement('h4');
-    h4DrinkName.innerText = item.name;
-    h4DrinkName.classList.add('item-name');
-    liDrink.appendChild(h4DrinkName);
+    const h4ItemName = document.createElement('h4');
+    h4ItemName.innerText = item.name;
+    h4ItemName.classList.add('item-name');
+    liItem.appendChild(h4ItemName);
 
     //drink details
     if (item.abv || item.maker || item.location){
         const pItemDetails = document.createElement('p');
         pItemDetails.innerText = compileDrinkDetailString(item);
         pItemDetails.classList.add('item-info');
-        liDrink.appendChild(pItemDetails);
+        liItem.appendChild(pItemDetails);
     }
 
     //drink description
@@ -259,24 +224,47 @@ const buildDrinkListItem = (item) => {
         const pItemDescription = document.createElement('p');
         pItemDescription.innerText = item.description;
         pItemDescription.classList.add('item-info')
-        liDrink.appendChild(pItemDescription);
+        liItem.appendChild(pItemDescription);
+    }
+
+    //ingredients
+    if (item.ingredients){
+        const pItemIngredients = document.createElement('p');
+        pItemIngredients.innerText = compileIngredientsString(item.ingredients);
+        liItem.appendChild(pItemIngredients);
     }
 
     //price
     const pPrice = document.createElement('p');
     pPrice.innerText = '$' + item.price.toFixed(2);
     pPrice.classList.add('item-price');
-    liDrink.appendChild(pPrice);
+    liItem.appendChild(pPrice);
 
     //drink oz
     if (item.ounces){
         const pOz = document.createElement('p');
         pOz.innerText = item.ounces + 'oz';
         pOz.classList.add('drink-oz')
-        liDrink.appendChild(pOz);
+        liItem.appendChild(pOz);
     }
 
-    return liDrink;
+    //loop through tags on item
+    let ulTags = null;
+    if (item.tags){
+        ulTags = document.createElement('ul');
+        ulTags.classList.add('tag-list')
+
+        item.tags.forEach(tag => {
+            const liTag = document.createElement('li');
+            liTag.innerText = tag;
+            liTag.classList.add('item-tag');
+
+            ulTags.appendChild(liTag);
+        })
+        liItem.appendChild(ulTags);
+    }
+
+    return liItem;
 }
 
 const compileIngredientsString = (ingredients) => {
@@ -328,14 +316,19 @@ const setActiveCategory = (category) => {
 
     //add active class to new category
     const newButton = document.getElementById(`${category}-button`);
-    newButton.classList.add('active-category');
 
-    //scroll the category rail to correct location
-    const rail = document.getElementById('category-list-rail');
-    rail.scrollTo({
-        left: newButton.offsetLeft,
-        behavior: 'smooth',
-    }) 
+    if (newButton){
+        newButton.classList.add('active-category');
+    
+        //scroll the category rail to correct location
+        const rail = document.getElementById('category-list-rail');
+        rail.scrollTo({
+            left: newButton.offsetLeft,
+            behavior: 'smooth',
+        }) 
+    }else{
+        clearActiveCategory();
+    }
 }
 
 const clearActiveCategory = () => {
@@ -372,27 +365,19 @@ const scrollToCategory = (category) => {
 const checkForScrollOverCategory = (scrollPos) => {
     const sectionGap = window.innerWidth > 768 ? 24 : 8;
 
-    const categoryIndex = food.map(category => category.name).sort((a,b) => {
-        return document.getElementById(a).offsetTop - document.getElementById(b).offsetTop
-    })
-
-    const i = categoryIndex.findIndex(category => {
+    const i = categoryOrder.findIndex(category => {
         const viewStart = Math.round(scrollPos + sectionGap + categoryNavHeight);
         const sectionTop = Math.round(document.getElementById(category).offsetTop);
-
-        console.log("Viewport is at: " + viewStart);
 
         return sectionTop > viewStart
     });
 
-    console.log('Setting category: ' + i)
-
     if (scrollPos === 0){
         clearActiveCategory();
-    }else if (i > 0){
-        setActiveCategory(categoryIndex[i - 1]);
-    }else{
-        setActiveCategory("Drinks");
+    }
+    
+    if (i > 0){
+        setActiveCategory(categoryOrder[i - 1]);
     }
 }
 
@@ -408,3 +393,32 @@ document.addEventListener('scroll', () => {
 
     scrollEventTicking = true;
 })
+
+const showMenu = (menu) => {
+    const foodMenu = document.getElementById('food-menu');
+    const drinkMenu = document.getElementById('drink-menu');
+    const switcherButtons = document.getElementsByClassName('switcher');
+
+    if (menu === activeMenu){
+        return;
+    }
+
+    //toggle active class on switcher buttons
+    for (let i = 0; i < switcherButtons.length; i++){
+        switcherButtons[i].classList.toggle('active');
+    }
+
+    //hide/show appropriate menu
+    drinkMenu.classList.toggle('menu-hidden');
+    foodMenu.classList.toggle('menu-hidden');
+
+    if (menu === 'food'){
+        buildCategoryLinks(food);
+    }
+
+    if (menu === 'drinks'){
+        buildCategoryLinks(drinks);
+    }
+
+    activeMenu = menu;
+}

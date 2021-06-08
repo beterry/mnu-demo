@@ -15,6 +15,10 @@
 </head>
 <body>
     <header>
+        <nav id="menu-switcher">
+            <button class="switcher active" onClick="showMenu('food')">Food</button>
+            <button class="switcher" onClick="showMenu('drinks')">Drinks</button>
+        </nav>
         <img id="logo" src="images/station-grill-logo.png" alt="Station Grill logo" />
         <nav id="top-bar">
             <ul>
@@ -38,7 +42,10 @@
             <ul id="category-list-train"></ul>
         </div>
     </nav>
-    <main id="menu"></main>
+    <main>
+        <article id="food-menu"></article>
+        <article id="drink-menu" class="menu-hidden"></article>
+    </main>
     <footer class="mnu-footer">
         <p>Powered by</p>
         <a href="https://mnumenu.com"><img src="images//mnu-logo.svg" alt="mnu" /></a>

@@ -79,6 +79,28 @@ header{
     }
 }
 
+#menu-switcher{
+    text-align: center;
+    margin: 28px 0;
+    margin-bottom: 8px;
+}
+
+.switcher{
+    background-color: transparent;
+    border: 1px solid var(--primary);
+    min-width: 100px;
+    padding: 8px;
+    border-radius: 50px;
+    color: var(--primary);
+    font-weight: 500;
+    margin: 0 4px;
+}
+
+.switcher.active{
+    background-color: var(--primary);
+    color: white;
+}
+
 
 /* =================================================================== */
 /* CATEGORY LIST */
@@ -147,10 +169,11 @@ header{
     left: 0;
     right: 0;
     bottom: 0;
+    border-radius: 2px;
 }
 
 .category-link-icon{
-    width: 44px;
+    width: 55px;
 }
 
 .category-link-name{
@@ -162,18 +185,20 @@ header{
     text-overflow: ellipsis;
 }
 
-
-
 /* =================================================================== */
 /* MENU ITEMS */
 /* =================================================================== */
 
-#menu{
+#food-menu, #drink-menu{
     max-width: 1200px;
     margin: 0 auto;
 }
 
-#menu > section{
+.menu-hidden{
+    display: none;
+}
+
+.menu-section{
     border-top: 1px solid var(--border-color);
     border-bottom: 1px solid var(--border-color);
     background-color: white;
@@ -183,7 +208,7 @@ header{
 }
 
 @media screen and (min-width: 768px){
-    #menu > section{
+    .menu-section{
         border-radius: 8px;
         border: 1px solid var(--border-color);
         padding: 48px 32px;
@@ -196,7 +221,7 @@ header{
     margin-bottom: 24px;
 }
 
-.food-item, .drink-item{
+.item{
     position: relative;
     padding: 16px 0;
     border-top: 1px solid var(--border-color);
@@ -210,7 +235,7 @@ header{
 .item-info{
     margin: 0;
     margin-top: 12px;
-    width: 85%;
+    width: 80%;
     line-height: 1.3;
 }
 
