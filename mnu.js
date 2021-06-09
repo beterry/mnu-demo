@@ -119,49 +119,6 @@ const buildMenu = (items, htmlID) => {
     })
 }
 
-const buildDrinkMenu = () => {
-    const mainContainer = document.getElementById('menu')
-
-    const sectionDrinks = document.createElement('section');
-    sectionDrinks.id = 'Drinks';
-    
-    const h2SectionHeading = document.createElement('h2');
-    h2SectionHeading.innerText = 'Drinks';
-    h2SectionHeading.classList.add('category-name');
-    sectionDrinks.appendChild(h2SectionHeading);
-
-    //category list
-    const ulDrinkCategories = document.createElement('ul');
-
-    drinks.forEach(category => {
-        const liCategory = document.createElement('li');
-        liCategory.classList.add('drink-category');
-
-        //category heading
-        const h3CategoryHeading = document.createElement('h3');
-        h3CategoryHeading.innerText = category.name;
-        h3CategoryHeading.classList.add('category-name');
-        liCategory.appendChild(h3CategoryHeading);
-
-        //drink list
-        const ulDrinks = document.createElement('ul');
-
-        category.items.forEach(item => {
-            const liDrink = buildDrinkListItem(item);
-            ulDrinks.appendChild(liDrink);
-        })
-
-        //add drink list to category
-        liCategory.appendChild(ulDrinks);
-
-        //add category to list
-        ulDrinkCategories.appendChild(liCategory);
-    })
-
-    sectionDrinks.appendChild(ulDrinkCategories);
-    mainContainer.prepend(sectionDrinks);
-}
-
 const buildCategoryLinks = (categories) => {
     //clear the train
     const ulMenuCategories = document.getElementById("category-list-train");
@@ -398,6 +355,11 @@ const showMenu = (menu) => {
     const foodMenu = document.getElementById('food-menu');
     const drinkMenu = document.getElementById('drink-menu');
     const switcherButtons = document.getElementsByClassName('switcher');
+    const switcherIcon = document.getElementById('switcher-icon');
+
+    if (menu === 'toggle'){
+        menu = activeMenu === 'food' ? 'drinks' : 'food';
+    }
 
     if (menu === activeMenu){
         return;
@@ -414,11 +376,26 @@ const showMenu = (menu) => {
 
     if (menu === 'food'){
         buildCategoryLinks(food);
+        switcherIcon.innerText = 'wine_bar';
     }
 
     if (menu === 'drinks'){
         buildCategoryLinks(drinks);
+        switcherIcon.innerText = 'restaurant';
     }
+
+    //scroll the category rail to start
+    const rail = document.getElementById('category-list-rail');
+    rail.scrollTo({
+        left: 0,
+        behavior: 'auto',
+    }) 
+    
+    //scroll to top
+    window.scrollTo({
+        top: 0,
+        behavior: 'auto',
+    })
 
     activeMenu = menu;
 }

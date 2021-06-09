@@ -20,7 +20,6 @@
 html, body{
     min-height: 100%;
     font-family: 'Raleway', sans-serif;
-    scroll-behavior: smooth;
     background-color: var(--bg-color);
     box-sizing: border-box;
 }
@@ -99,6 +98,30 @@ header{
 .switcher.active{
     background-color: var(--primary);
     color: white;
+}
+
+.switcher.float{
+    border-radius: 50%;
+    background-color: var(--primary);
+    min-width: auto;
+    width: 60px;
+    height: 60px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#float-switcher{
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    z-index: 1;
+}
+
+#switcher-icon{
+    color: white;
+    font-size: 28px;
 }
 
 

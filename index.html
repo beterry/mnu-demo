@@ -12,12 +12,17 @@
 
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="shortcut icon" type="image/svg+xml" href="images/mnu_favicon.svg"/>
 </head>
 <body>
     <header>
         <nav id="menu-switcher">
             <button class="switcher active" onClick="showMenu('food')">Food</button>
             <button class="switcher" onClick="showMenu('drinks')">Drinks</button>
+            <button id="float-switcher" class="switcher float" onClick="showMenu('toggle')">
+                <span id="switcher-icon" class="material-icons">wine_bar</span>
+            </button>
         </nav>
         <img id="logo" src="images/station-grill-logo.png" alt="Station Grill logo" />
         <nav id="top-bar">
