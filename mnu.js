@@ -310,13 +310,13 @@ const scrollToCategory = (category) => {
         behavior: 'smooth',
     })
 
+    setFloatSwitcherHidden(false);
+
     //TODO: this is kinda hacky
     //after scrolling, allow scrolling event listeners again
     setTimeout(() => {
         scrollEventTicking = false;
     }, 1000);
-
-    console.log('Scrolling to: ' + scrollToPosition);
 }
 
 const checkForScrollOverCategory = (scrollPos) => {
@@ -338,12 +338,37 @@ const checkForScrollOverCategory = (scrollPos) => {
     }
 }
 
+const checkForScrollPastSwitcher = (scrollPos) => {
+    const switcherSection = document.getElementById('menu-switcher');
+    const floatSwitcher = document.getElementById('float-switcher-container');
+
+    const posTrigger = switcherSection.offsetTop + switcherSection.offsetHeight;
+
+    //check if user is past the switcher at the top
+    if (scrollPos > posTrigger){
+        setFloatSwitcherHidden(false)
+    }else {
+        setFloatSwitcherHidden(true);
+    }
+}
+
+const setFloatSwitcherHidden = (bool) => {
+    const floatSwitcher = document.getElementById('float-switcher-container');
+
+    if (bool){
+        floatSwitcher.classList.add('off-screen');
+    }else{
+        floatSwitcher.classList.remove('off-screen');
+    }
+}
+
 document.addEventListener('scroll', () => {
     lastKnownScrollPosition = window.scrollY;
 
     if (!scrollEventTicking) {
         setTimeout(() => {
             checkForScrollOverCategory(lastKnownScrollPosition);
+            checkForScrollPastSwitcher(lastKnownScrollPosition);
             scrollEventTicking = false;
         }, 500)
     }
@@ -355,7 +380,7 @@ const showMenu = (menu) => {
     const foodMenu = document.getElementById('food-menu');
     const drinkMenu = document.getElementById('drink-menu');
     const switcherButtons = document.getElementsByClassName('switcher');
-    const switcherIcon = document.getElementById('switcher-icon');
+    const floatSwitcher = document.getElementById('float-switcher-container');
 
     if (menu === 'toggle'){
         menu = activeMenu === 'food' ? 'drinks' : 'food';
@@ -376,12 +401,10 @@ const showMenu = (menu) => {
 
     if (menu === 'food'){
         buildCategoryLinks(food);
-        switcherIcon.innerText = 'wine_bar';
     }
 
     if (menu === 'drinks'){
         buildCategoryLinks(drinks);
-        switcherIcon.innerText = 'restaurant';
     }
 
     //scroll the category rail to start
@@ -396,6 +419,8 @@ const showMenu = (menu) => {
         top: 0,
         behavior: 'auto',
     })
+
+    setFloatSwitcherHidden(true);
 
     activeMenu = menu;
 }

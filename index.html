@@ -20,8 +20,13 @@
         <nav id="menu-switcher">
             <button class="switcher active" onClick="showMenu('food')">Food</button>
             <button class="switcher" onClick="showMenu('drinks')">Drinks</button>
-            <button id="float-switcher" class="switcher float" onClick="showMenu('toggle')">
+        </nav>
+        <nav id="float-switcher-container" class="off-screen">
+            <button id="float-switcher-drinks" class="switcher float" onClick="showMenu('drinks')">
                 <span id="switcher-icon" class="material-icons">wine_bar</span>
+            </button>
+            <button id="float-switcher-food" class="switcher float active" onClick="showMenu('food')">
+                <span id="switcher-icon" class="material-icons">restaurant</span>
             </button>
         </nav>
         <img id="logo" src="images/station-grill-logo.png" alt="Station Grill logo" />
