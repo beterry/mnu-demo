@@ -65,6 +65,7 @@ Promise.all([foodCall, drinkCall])
     buildMenu(drinks, 'drink-menu');
 
     buildCategoryLinks(food);
+    removeLoader();
 })
 
 //seperates food items from Contentful into categories
@@ -423,4 +424,9 @@ const showMenu = (menu) => {
     setFloatSwitcherHidden(true);
 
     activeMenu = menu;
+}
+
+const removeLoader = () => {
+    const loaderContainer = document.getElementById('loader-container');
+    loaderContainer.style.display = 'none';
 }
