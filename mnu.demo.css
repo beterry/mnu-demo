@@ -67,9 +67,6 @@ header{
     align-items: center;
 }
 
-#top-bar .material-icons{
-}
-
 #top-bar .link-expanded{
     margin-left: 8px;
     display: none;
