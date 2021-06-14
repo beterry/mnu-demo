@@ -5,6 +5,7 @@
     --primary: #184D47;
     --primary-50: rgba(24, 77, 71, 0.5);
     --primary-30: rgba(24, 77, 71, 0.3);
+    --primary-10: rgba(24, 77, 71, 0.1);
 
     --secondary: #95BB7B;
 
@@ -100,6 +101,16 @@ header{
     color: white;
 }
 
+@media (pointer: fine) {
+    .switcher:hover{
+        background-color: var(--primary-10);
+        cursor: pointer;
+    }
+    .switcher.active:hover{
+        background-color: var(--primary);
+    }
+}
+
 .switcher.float{
     border-radius: 50%;
     background-color: white;
@@ -111,6 +122,13 @@ header{
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+@media (pointer: fine) {
+    .switcher.float:hover{
+        background-color: var(--primary-10);
+        cursor: pointer;
+    }
 }
 
 .switcher.float.active{
@@ -192,6 +210,7 @@ header{
     text-decoration: none;
 
     border: none;
+    border-radius: 16px;
 }
 
 .category-button.active-category:after{
@@ -218,6 +237,13 @@ header{
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+
+@media (pointer: fine) {
+    .category-button:hover{
+        background-color: #EAEDF4;
+        cursor: pointer;
+    }
 }
 
 /* =================================================================== */
@@ -253,6 +279,7 @@ main{
         border-radius: 8px;
         border: 1px solid var(--border-color);
         padding: 48px 32px;
+        padding-bottom: 24px;
         margin: 24px 0;
     }
 }
@@ -273,11 +300,23 @@ main{
     margin-bottom: 12px;
 }
 
+.item-description{
+    margin: 0;
+    margin-top: 12px;
+    line-height: 1.6;
+}
+
 .item-info{
     margin: 0;
     margin-top: 12px;
+    line-height: 1.6;
+}
+
+.drink-info{
+    margin: 0;
+    margin-top: 12px;
     width: 80%;
-    line-height: 1.3;
+    line-height: 1.6;
 }
 
 .item-price{

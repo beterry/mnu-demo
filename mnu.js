@@ -20,6 +20,8 @@ const iconIndex = {
     Bottles: 'images/icons/icons_bottles.svg',
     "Red Wine": 'images/icons/icons_red-wine.svg',
     "White Wine": 'images/icons/icons_white-wine.svg',
+    "Soft Drinks": 'images/icons/icons_soda.svg',
+    Cocktails: 'images/icons/icons_cocktails.svg',
 }
 
 //TODO: make this an editable value in Contentful
@@ -32,10 +34,12 @@ const categoryOrder = [
     'Burgers',
     'Entrees',
     'Desserts',
+    'Cocktails',
     'Drafts',
     'Bottles',
     'Red Wine',
     'White Wine',
+    'Soft Drinks',
 ];
 
 //this needs to match variable in the CSS
@@ -173,7 +177,7 @@ const buildItem = (item) => {
     if (item.abv || item.maker || item.location){
         const pItemDetails = document.createElement('p');
         pItemDetails.innerText = compileDrinkDetailString(item);
-        pItemDetails.classList.add('item-info');
+        pItemDetails.classList.add('drink-info');
         liItem.appendChild(pItemDetails);
     }
 
@@ -189,6 +193,7 @@ const buildItem = (item) => {
     if (item.ingredients){
         const pItemIngredients = document.createElement('p');
         pItemIngredients.innerText = compileIngredientsString(item.ingredients);
+        pItemIngredients.classList.add('item-description')
         liItem.appendChild(pItemIngredients);
     }
 
