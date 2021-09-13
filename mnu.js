@@ -1,46 +1,14 @@
 let food = [];
 let drinks = [];
+let foodCats = [];
+let drinkCats = [];
+let allCategories = [];
 
 let lastKnownScrollPosition = 0;
 let scrollEventTicking = false;
 
 //this is the default shown
 let activeMenu = 'food';
-
-const iconIndex = {
-    Starters: 'images/icons/icons_starters.svg',
-    Desserts: 'images/icons/icons_dessert.svg',
-    Entrees: 'images/icons/icons_entrees.svg',
-    Burgers: 'images/icons/icons_burgers.svg',
-    Sandwiches: 'images/icons/icons_sandwiches.svg',
-    Salads: 'images/icons/icons_salads.svg',
-    Flatbreads: 'images/icons/icons_flatbread.svg',
-    Specials: 'images/icons/icons_specials.svg',
-    Drafts: 'images/icons/icons_draft.svg',
-    Bottles: 'images/icons/icons_bottles.svg',
-    "Red Wine": 'images/icons/icons_red-wine.svg',
-    "White Wine": 'images/icons/icons_white-wine.svg',
-    "Soft Drinks": 'images/icons/icons_soda.svg',
-    Cocktails: 'images/icons/icons_cocktails.svg',
-}
-
-//TODO: make this an editable value in Contentful
-const categoryOrder = [
-    'Specials',
-    'Starters',
-    'Salads',
-    'Flatbreads',
-    'Sandwiches',
-    'Burgers',
-    'Entrees',
-    'Desserts',
-    'Cocktails',
-    'Drafts',
-    'Bottles',
-    'Red Wine',
-    'White Wine',
-    'Soft Drinks',
-];
 
 //this needs to match variable in the CSS
 const categoryNavHeight = 100;
@@ -56,8 +24,17 @@ const foodCall = client.getEntries({'content_type': 'item'});
 //drinks items
 const drinkCall = client.getEntries({'content_type': 'drinkItem'});
 
-Promise.all([foodCall, drinkCall])
+//categories
+const catCall = client.getEntries({'content_type': 'category'});
+
+Promise.all([foodCall, drinkCall, catCall])
 .then((res) => {
+
+    //must organize categories before items
+    organizeCategories(res[2]);
+    console.log(foodCats);
+    console.log(drinkCats);
+
     //food
     food = organizeItems(res[0]);
     console.log(food);
@@ -68,30 +45,53 @@ Promise.all([foodCall, drinkCall])
     console.log(drinks);
     buildMenu(drinks, 'drink-menu');
 
-    buildCategoryLinks(food);
+    buildCategoryLinks(foodCats);
     removeLoader();
 })
 
-//seperates food items from Contentful into categories
+//seperates food/drink items from Contentful into categories
 const organizeItems = (data) => {
     const itemsUnsorted = data.items.map((item) => item.fields);
     let itemsSorted = [];
 
     itemsUnsorted.forEach(item => {
-        const i = itemsSorted.findIndex(category => category.name === item.category);
+        const i = itemsSorted.findIndex(category => category.name === item.categoryRef.fields.category);
         if (i >= 0){
             itemsSorted[i].items.push(item);
         }else{
             itemsSorted.push({
-                name: item.category,
+                name: item.categoryRef.fields.category,
                 items: [item],
             });
         }
     })
 
-    itemsSorted.sort((a, b) => categoryOrder.indexOf(a.name) - categoryOrder.indexOf(b.name));
+    itemsSorted.sort((a, b) => {
+        const priorityA = allCategories.findIndex(cat => cat.category === a.name);
+        const priorityB = allCategories.findIndex(cat => cat.category === b.name);
+        return priorityA - priorityB;
+    });
 
     return itemsSorted;
+}
+
+//disects the contentful data into usable information
+const organizeCategories = (data) => {
+
+    //--1. distill the data to a usable object
+    const allCategoriesUnsorted = data.items.map((cat) => {
+        return {
+            ...cat.fields,
+            icon: cat.fields.icon.fields.file.url
+        }
+    });
+
+    //--2. sort the distilled categories by priority and assign to global variable
+    allCategories = allCategoriesUnsorted.sort((a,b) => a.priority - b.priority);
+
+    //--3. assign filtered categories to global variables
+    drinkCats = allCategories.filter((cat => cat.type === "Drink"));
+    foodCats = allCategories.filter((cat => cat.type === "Food"));
 }
 
 const buildMenu = (items, htmlID) => {
@@ -129,29 +129,24 @@ const buildCategoryLinks = (categories) => {
     const ulMenuCategories = document.getElementById("category-list-train");
     ulMenuCategories.innerHTML = "";
 
-    //isolate the category names
-    let categoryList = categories.map(cat => cat.name);
-    //add Drinks to the category list
-    categoryList.sort((a, b) => categoryOrder.indexOf(a) - categoryOrder.indexOf(b));
-
-    categoryList.forEach(category => {
+    categories.forEach(category => {
         const li = document.createElement('li');
 
         const button = document.createElement('button');
         button.addEventListener('click', (e) => {
             e.preventDefault();
-            handleCategoryTapped(category)
+            handleCategoryTapped(category.category)
         });
-        button.id = `${category}-button`
+        button.id = `${category.category}-button`
         button.classList.add('category-button');
 
         const spanCategoryName = document.createElement('span');
-        spanCategoryName.innerText = category;
+        spanCategoryName.innerText = category.category;
         spanCategoryName.classList.add('category-link-name');
 
         const imgIcon = document.createElement('img');
-        imgIcon.src = iconIndex[category];
-        imgIcon.alt = category;
+        imgIcon.src = category.icon;
+        imgIcon.alt = category.category;
         imgIcon.classList.add('category-link-icon');
 
         button.appendChild(imgIcon);
@@ -328,9 +323,9 @@ const scrollToCategory = (category) => {
 const checkForScrollOverCategory = (scrollPos) => {
     const sectionGap = window.innerWidth > 768 ? 24 : 8;
 
-    const i = categoryOrder.findIndex(category => {
+    const i = allCategories.findIndex(category => {
         const viewStart = Math.round(scrollPos + sectionGap + categoryNavHeight);
-        const sectionTop = Math.round(document.getElementById(category).offsetTop);
+        const sectionTop = Math.round(document.getElementById(category.category).offsetTop);
 
         return sectionTop > viewStart
     });
@@ -340,7 +335,7 @@ const checkForScrollOverCategory = (scrollPos) => {
     }
     
     if (i > 0){
-        setActiveCategory(categoryOrder[i - 1]);
+        setActiveCategory(allCategories[i - 1].category);
     }
 }
 
@@ -406,11 +401,11 @@ const showMenu = (menu) => {
     foodMenu.classList.toggle('menu-hidden');
 
     if (menu === 'food'){
-        buildCategoryLinks(food);
+        buildCategoryLinks(foodCats);
     }
 
     if (menu === 'drinks'){
-        buildCategoryLinks(drinks);
+        buildCategoryLinks(drinkCats);
     }
 
     //scroll the category rail to start
