@@ -289,6 +289,12 @@ main{
     margin-bottom: 24px;
 }
 
+.category-descrip{
+    font-size: .875rem;
+    color: hsl(0, 0%, 40%);
+    line-height: 1.5;
+}
+
 .item{
     position: relative;
     padding: 16px 0;

@@ -1,7 +1,5 @@
 let food = [];
-let drinks = [];
-let foodCats = [];
-let drinkCats = [];
+let drink = [];
 let allCategories = [];
 
 let lastKnownScrollPosition = 0;
@@ -32,47 +30,38 @@ Promise.all([foodCall, drinkCall, catCall])
 
     //must organize categories before items
     organizeCategories(res[2]);
-    console.log(foodCats);
-    console.log(drinkCats);
 
     //food
-    food = organizeItems(res[0]);
-    console.log(food);
-    buildMenu(food, 'food-menu');
-
+    organizeItems(res[0]);
+    
     //drinks
-    drinks = organizeItems(res[1]);
+    organizeItems(res[1]);
+    
+    //seperate allCategories into food and drinks
+    seperateItems();
+    console.log(food);
     console.log(drinks);
+    
+    //build menus to DOM
+    buildMenu(food, 'food-menu');
     buildMenu(drinks, 'drink-menu');
 
-    buildCategoryLinks(foodCats);
+    buildCategoryLinks(food);
+
+    //reveal all data
     removeLoader();
 })
 
-//seperates food/drink items from Contentful into categories
+//seperates food/drink items from Contentful into categories and adds them to the
+//correct category
 const organizeItems = (data) => {
-    const itemsUnsorted = data.items.map((item) => item.fields);
+    const items = data.items.map((item) => item.fields);
     let itemsSorted = [];
 
-    itemsUnsorted.forEach(item => {
-        const i = itemsSorted.findIndex(category => category.name === item.categoryRef.fields.category);
-        if (i >= 0){
-            itemsSorted[i].items.push(item);
-        }else{
-            itemsSorted.push({
-                name: item.categoryRef.fields.category,
-                items: [item],
-            });
-        }
+    items.forEach(item => {
+        const i = allCategories.findIndex(cat => cat.category === item.categoryRef.fields.category);
+        allCategories[i].items.push(item);
     })
-
-    itemsSorted.sort((a, b) => {
-        const priorityA = allCategories.findIndex(cat => cat.category === a.name);
-        const priorityB = allCategories.findIndex(cat => cat.category === b.name);
-        return priorityA - priorityB;
-    });
-
-    return itemsSorted;
 }
 
 //disects the contentful data into usable information
@@ -82,44 +71,56 @@ const organizeCategories = (data) => {
     const allCategoriesUnsorted = data.items.map((cat) => {
         return {
             ...cat.fields,
-            icon: cat.fields.icon.fields.file.url
+            icon: cat.fields.icon.fields.file.url,
+            items: [],
         }
     });
 
     //--2. sort the distilled categories by priority and assign to global variable
     allCategories = allCategoriesUnsorted.sort((a,b) => a.priority - b.priority);
+}
 
-    //--3. assign filtered categories to global variables
-    drinkCats = allCategories.filter((cat => cat.type === "Drink"));
-    foodCats = allCategories.filter((cat => cat.type === "Food"));
+const seperateItems = () => {
+    drinks = allCategories.filter((cat => cat.type === "Drink"));
+    food = allCategories.filter((cat => cat.type === "Food"));
 }
 
 const buildMenu = (items, htmlID) => {
     items.forEach(category => {
         const container = document.getElementById(htmlID);
 
+        //section
         const section = document.createElement('section');
-        section.id = category.name;
+        section.id = category.category;
         section.classList.add('menu-section');
         
+        //heading
         const sectionHeading = document.createElement('h2');
-        sectionHeading.innerText = category.name;
+        sectionHeading.innerText = category.category;
         sectionHeading.classList.add('category-name');
 
-        section.appendChild(sectionHeading);
-
+        //description
+        const sectionDescrip = document.createElement('p');
+        sectionDescrip.innerText = category.description;
+        sectionDescrip.classList.add('category-descrip');
+        
+        //items
         const list = document.createElement('ul');
-        list.id = category.name;
-
+        list.id = category.category;
+        
         //loop through items in category
         category.items.forEach((item) => {
             const listItem = buildItem(item);
-
+            
             //append menu item to list
             list.appendChild(listItem);
         })
-
+        
+        //append nodes to section
+        section.appendChild(sectionHeading);
+        category.description ? section.appendChild(sectionDescrip): null;
         section.appendChild(list);
+
         container.appendChild(section);
     })
 }
@@ -401,11 +402,11 @@ const showMenu = (menu) => {
     foodMenu.classList.toggle('menu-hidden');
 
     if (menu === 'food'){
-        buildCategoryLinks(foodCats);
+        buildCategoryLinks(food);
     }
 
     if (menu === 'drinks'){
-        buildCategoryLinks(drinkCats);
+        buildCategoryLinks(drinks);
     }
 
     //scroll the category rail to start
