@@ -58,9 +58,15 @@ const organizeItems = (data) => {
     const items = data.items.map((item) => item.fields);
     let itemsSorted = [];
 
+    //add every item to the allCategories array
     items.forEach(item => {
         const i = allCategories.findIndex(cat => cat.category === item.categoryRef.fields.category);
         allCategories[i].items.push(item);
+    })
+
+    //sort items in each category by price
+    allCategories.forEach(cat => {
+        cat.items.sort((a,b) => b.price - a.price);
     })
 }
 
