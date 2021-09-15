@@ -301,6 +301,10 @@ main{
     border-top: 1px solid var(--border-color);
 }
 
+.item-tapped *:not(.item-price){
+    opacity: .35;
+}
+
 .item-name{
     margin: 0;
     margin-bottom: 12px;
@@ -331,6 +335,11 @@ main{
     top: 16px;
     right: 0;
     font-weight: bold;
+}
+
+.item-tapped .item-price{
+    background-color: var(--tertiary);
+    padding: 0 8px;
 }
 
 .tag-list{

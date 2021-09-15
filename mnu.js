@@ -195,10 +195,14 @@ const buildItem = (item) => {
 
     //price
     const pPrice = document.createElement('p');
-    pPrice.innerText = '$' + item.price.toFixed(2);
     pPrice.classList.add('item-price');
+    if (item.tapped){
+        pPrice.innerText = 'Tapped';
+    } else {
+        pPrice.innerText = '$' + item.price.toFixed(2);
+    }
     liItem.appendChild(pPrice);
-
+    
     //drink oz
     if (item.ounces){
         const pOz = document.createElement('p');
@@ -221,6 +225,11 @@ const buildItem = (item) => {
             ulTags.appendChild(liTag);
         })
         liItem.appendChild(ulTags);
+    }
+
+    //add conditional classes to item
+    if (item.tapped){
+        liItem.classList.add('item-tapped');
     }
 
     return liItem;
